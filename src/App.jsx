@@ -17,6 +17,7 @@ import {
 } from "react-router-dom";
 import PortalPage from "./pages/PortalPage";
 import InterviewForm from "./pages/InterviewFormPage";
+import InterviewPage from "./pages/InterviewPage";
 
 // Redirect logged-in users from public pages
 function PublicRoute({ children }) {
@@ -58,6 +59,14 @@ function App() {
       element: (
         <PrivateRoute>
           <InterviewForm />
+        </PrivateRoute>
+      ),
+    },
+    {
+      path: "/interview",
+      element: (
+        <PrivateRoute>
+          <InterviewPage />
         </PrivateRoute>
       ),
     },
