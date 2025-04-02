@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PersonalInfo from "../components/profilePage/PersonalInfo";
-
+import InterviewStats from "../components/profilePage/InterviewStats";
 const ProfilePage = () => {
 
   const [candidateData] = useState({
@@ -41,12 +41,49 @@ const ProfilePage = () => {
           }
         ]
       },
-      mockInterviews: [
-        { id: 1, date: "2025-03-10", score: 72, position: "Frontend Developer" },
-        { id: 2, date: "2025-03-15", score: 78, position: "Frontend Developer" },
-        { id: 3, date: "2025-03-20", score: 85, position: "Senior Developer" },
-        { id: 4, date: "2025-03-25", score: 89, position: "Senior Developer" }
+      mockInterviews : [
+        { 
+          id: 1, 
+          sno: 1, 
+          company: "Google", 
+          jobRole: "Frontend Developer", 
+          score: 72, 
+          date: "2025-03-10", 
+          time: "10:30 AM", 
+          actions: "View Report" 
+        },
+        { 
+          id: 2, 
+          sno: 2, 
+          company: "Microsoft", 
+          jobRole: "Frontend Developer", 
+          score: 78, 
+          date: "2025-03-15", 
+          time: "02:00 PM", 
+          actions: "View Report" 
+        },
+        { 
+          id: 3, 
+          sno: 3, 
+          company: "Amazon", 
+          jobRole: "Senior Developer", 
+          score: 85, 
+          date: "2025-03-20", 
+          time: "11:45 AM", 
+          actions: "View Report" 
+        },
+        { 
+          id: 4, 
+          sno: 4, 
+          company: "Meta", 
+          jobRole: "Senior Developer", 
+          score: 89, 
+          date: "2025-03-25", 
+          time: "04:15 PM", 
+          actions: "View Report" 
+        }
       ]
+      
     });
 
   return (
@@ -55,6 +92,7 @@ const ProfilePage = () => {
                     personalInfo={candidateData.personalInfo} 
                     atsScore={candidateData.resume.atsScore} 
                   />
+      <InterviewStats interviews={candidateData.mockInterviews} />
     </div>
   );
 };
