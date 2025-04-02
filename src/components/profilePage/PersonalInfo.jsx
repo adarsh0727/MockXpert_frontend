@@ -5,11 +5,9 @@ import { Linkedin, Phone } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { Button } from "../ui/button";
 
-const PersonalInfo = ({ personalInfo, atsScore }) => {
+const PersonalInfo = ({ atsScore }) => {
   const { authUser } = useAuthStore();
   console.log(authUser);
-
-  function handleResume() {}
 
   return (
     <Card className="mb-6">
