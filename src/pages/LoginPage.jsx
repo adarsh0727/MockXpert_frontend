@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuthStore } from "../store/useAuthStore";
+import { Link } from "react-router-dom";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,7 +39,6 @@ const signupSchema = z.object({
 const LoginPage = () => {
   const { login, signup } = useAuthStore();
 
-  // 1. Define your form.
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -106,6 +106,11 @@ const LoginPage = () => {
                   <Button type="submit" className="w-full">
                     Submit
                   </Button>
+                  <div className="text-center mt-2">
+                    <Link to="/forgot-password" className="text-sm text-blue-300 hover:underline">
+                      Forgot Password?
+                    </Link>
+                  </div>
                 </form>
               </Form>
             </CardContent>

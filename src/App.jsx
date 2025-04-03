@@ -18,11 +18,13 @@ import {
 import PortalPage from "./pages/PortalPage";
 import InterviewForm from "./pages/InterviewFormPage";
 import InterviewPage from "./pages/InterviewPage";
+import OTPVerificationPage from "./pages/OtpVerifivation";
+import ResetPasswordPage from "./pages/ResetPassword";
 
 // Redirect logged-in users from public pages
 function PublicRoute({ children }) {
   const { authUser } = useAuthStore();
-  console.log({ authUser });
+  // console.log({ authUser });
   return authUser ? <Navigate to="/" replace /> : children;
 }
 
@@ -47,6 +49,22 @@ function App() {
       element: (
         <PublicRoute>
           <LoginPage />
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/forgot-password",
+      element: (
+        <PublicRoute>
+          < OTPVerificationPage/>
+        </PublicRoute>
+      ),
+    },
+    {
+      path: "/reset-password",
+      element: (
+        <PublicRoute>
+          < ResetPasswordPage/>
         </PublicRoute>
       ),
     },
