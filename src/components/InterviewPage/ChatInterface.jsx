@@ -3,18 +3,18 @@ import useInterviewStore from "../../store/useInterviewStore";
 import { useRef, useEffect } from "react";
 
 const ChatInterface = () => {
-  const { currentConversation } = useInterviewStore();
+  const { conversation } = useInterviewStore();
   const messageEndRef = useRef(null);
   useEffect(() => {
-    if (messageEndRef.current && currentConversation) {
+    if (messageEndRef.current && conversation) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [currentConversation]);
+  }, [conversation]);
   return (
     <div className="flex flex-col h-screen w-full mx-auto p-4">
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {currentConversation.map((message, index) => (
+          {conversation.map((message, index) => (
             <div
               key={message.id || index}
               className={`flex items-start gap-2 ${
