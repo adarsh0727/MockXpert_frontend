@@ -60,9 +60,16 @@ const InterviewForm = () => {
   // ✅ Corrected submit function
   function onSubmit(values) {
     console.log("Form values before modification:", values);
-    setFormData(values);
 
-    navigate("/interview");
+    const updatedValues = { 
+      ...values, 
+      codingRound: values.interviewType === "Technical"
+    };
+
+    setFormData(updatedValues);
+    console.log("Form values after modification:", updatedValues);
+
+    navigate("/interview");  
   }
 
   return (

@@ -15,18 +15,7 @@ const useInterviewStore = create((set, get) => ({
   enableNextQuestion: false,
   generatingResponse: false,
 
-  messages: [
-    { id: 1, role: "assistant", content: "Hello! How can I help you today?" },
-    { id: 2, role: "user", content: "I have a question about React." },
-    {
-      id: 3,
-      role: "content",
-      content:
-        "Sure, I'd be happy to help with your React question. What would you like to know?",
-    },
-  ],
-
-  allConversations: [], // Stores all conversations
+  allConversations: [],
   currentConversation: [],
 
   isLoading: false,
@@ -36,13 +25,11 @@ const useInterviewStore = create((set, get) => ({
 
     const { generateNewQuestion } = get();
 
-    console.log("Sending data:", data);
     const response = await axiosInstance.post("/interview", data);
-    console.log("Response received:", response.data);
 
     set((state) => ({
       formData: { ...state.formData, ...data },
-      interviewId: response.data.interviewId, // Store interview ID
+      interviewId: response.data.interviewId,
     }));
 
     generateNewQuestion();
@@ -51,8 +38,7 @@ const useInterviewStore = create((set, get) => ({
   },
 
   generateNewQuestion: async () => {
-    set({ isLoading: true });
-    set({ enableNextQuestion: false });
+    set({ isLoading: true, enableNextQuestion: false });
 
     const { formData, currentConversation } = get();
 
@@ -61,107 +47,95 @@ const useInterviewStore = create((set, get) => ({
     }));
 
     const {
-      jobRole,
-      targetCompany,
-      preferredLanguage,
-      yearsOfExperience,
+      role: jobRole,
+      company: targetCompany,
+      prefferedLanguage: preferredLanguage,
+      experience: yearsOfExperience,
       codingRound,
     } = formData;
 
-    const systemContext = `
-        You are an experienced interviewer with 20+ years in technical interviews for the job role of ${jobRole} at companies like ${targetCompany}.
-        Please provide a relevant interview question for this role, based on current trends and typical interview questions for ${jobRole} at ${targetCompany}.
-        If the role is technical (e.g., Software Engineer, Data Scientist), provide a coding or problem-solving question in ${preferredLanguage}. Otherwise, provide a theoretical question as per the questions asked for ${jobRole} role Interview.
-      `;
+    console.log(jobRole, targetCompany);
 
-    let prompt = "";
-    if (codingRound) {
-      prompt = `Generate a medium-level technical question for a ${jobRole} position at ${targetCompany}, considering ${yearsOfExperience} years of experience and ${preferredLanguage} as the main programming language.`;
-    } else {
-      prompt = `Generate a theoretical question for a ${jobRole} position at ${targetCompany} with ${yearsOfExperience} years of experience.`;
-    }
+    const systemMessage = {
+      role: "system",
+      content: `
+    You are a senior technical interviewer conducting mock interviews for the role of ${jobRole} at ${targetCompany}. 
+    Ask one interview question at a time. Wait for the candidate's answer before asking follow-ups.
+    After the candidate answers, analyze their response and determine if:
+    - Follow-up questions are needed to go deeper on weak parts, or
+    - The answer is sufficient and you can proceed to the next question.
+    
+    Never ask the next question until the candidate is done with the previous one.
+    When the candidate gives a strong answer, ask: "Great. Would you like to proceed to the next question?"
+    `
+    };
 
-    const conv = [
-      {
-        role: "developer",
-        content: systemContext,
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ];
+    const userMessage = {
+      role: "user",
+      content: codingRound
+        ? `Generate a medium-level technical question for a ${jobRole} role at ${targetCompany}, considering ${yearsOfExperience} years of experience and ${preferredLanguage}.`
+        : `Generate a theoretical manegerial question for a ${jobRole} position at ${targetCompany} with ${yearsOfExperience} years of experience.`,
+    };
+
+    const initialMessages = [systemMessage, userMessage];
 
     const response = await axiosInstance.post("/chat", {
-      messagses: conv,
+      messages: initialMessages,
     });
 
-    console.log("Response received:", response.data);
+    // Append assistant reply to full conversation
+    const updatedConversation = [
+      ...initialMessages,
+      { content: response.data.reply, role: "assistant" },
+    ];
 
-    set({ currentConversation: response.data.reply });
-
-    set({ isLoading: false });
+    set({ currentConversation: updatedConversation, isLoading: false });
   },
 
-  // Function to add messages to the state
-  // addMessage: (message) =>
-  //   set((state) => ({ messages: [...state.messages, message] })),
-
-  // Function to send user input and get AI response
   sendMessage: async (event) => {
-    set({ generatingResponse: true });
-
     event.preventDefault();
+    set({ generatingResponse: true });
+  
     const userMessage = event.target.querySelector("textarea").value;
-
-    console.log(userMessage);
-
     const { currentConversation } = get();
-
-    // Add user message to chat history
-    set((state) => ({
-      currentConversation: [
-        ...state.currentConversation,
-        { content: userMessage, role: "user" },
-      ],
-    }));
-
+  
+    // ✅ Ensure a system message exists
+    const hasSystemMessage = currentConversation.some(
+      (msg) => msg.role === "system" || msg.role === "developer"
+    );
+  
+    const systemMessage = {
+      role: "assistant",
+      content: "You're an experienced technical interviewer. Ask thoughtful, contextual questions based on the chat history.",
+    };
+  
+    const updatedConversation = [
+      ...(hasSystemMessage ? [] : [systemMessage]),
+      ...currentConversation,
+      { role: "user", content: userMessage },
+    ];
+  
+    // ✅ Debug log
+    console.log("📤 [Frontend] Sending to /chat API:");
+    console.log(JSON.stringify({ messages: updatedConversation }, null, 2));
+  
+    set({ currentConversation: updatedConversation });
+  
     try {
       const response = await axiosInstance.post("/chat", {
-        currentConversation: [
-          ...currentConversation,
-          { content: userMessage, role: "user" },
-        ],
+        messages: updatedConversation,
       });
-
-      const aiReply = response.data.reply;
-
-      // Check if AI wants to move to the next question
-      if (aiReply.includes("<<NEXT_QUESTION>>")) {
-        const beforeNEXT_QUESTION = aiReply.split("<<NEXT_QUESTION>>");
-        set((state) => ({
-          currentConversation: [
-            ...state.currentConversation,
-            { content: beforeNEXT_QUESTION, role: "assistant" },
-          ],
-        }));
-
-        set({ enableNextQuestion: true });
-
-        // const nextQuestion =
-        //   aiReply.split("<<NEXT_QUESTION>>")[1]?.trim() ||
-        //   "Here's your next question:";
-        // set({ currentQuestion: nextQuestion });
-      } else {
-        set((state) => ({
-          currentConversation: [
-            ...state.currentConversation,
-            { content: aiReply, role: "assistant" },
-          ],
-        }));
-      }
+  
+      const assistantMessage = {
+        role: "assistant",
+        content: response.data.reply,
+      };
+  
+      set((state) => ({
+        currentConversation: [...state.currentConversation, assistantMessage],
+      }));
     } catch (error) {
-      console.error("Error fetching AI response:", error);
+      console.error("❌ [Frontend] Error fetching AI response:", error?.response?.data || error.message);
     } finally {
       set({ generatingResponse: false });
     }
