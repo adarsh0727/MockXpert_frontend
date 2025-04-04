@@ -15,11 +15,13 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+
 import PortalPage from "./pages/PortalPage";
 import InterviewForm from "./pages/InterviewFormPage";
-import InterviewPage from "./pages/InterviewPage";
+// import InterviewPage from "./pages/InterviewPage";
 import OTPVerificationPage from "./pages/OtpVerifivation";
 import ResetPasswordPage from "./pages/ResetPassword";
+import NewIntPage from "./pages/InterviewPageNew";
 
 // Redirect logged-in users from public pages
 function PublicRoute({ children }) {
@@ -56,7 +58,7 @@ function App() {
       path: "/forgot-password",
       element: (
         <PublicRoute>
-          < OTPVerificationPage/>
+          <OTPVerificationPage />
         </PublicRoute>
       ),
     },
@@ -64,7 +66,7 @@ function App() {
       path: "/reset-password",
       element: (
         <PublicRoute>
-          < ResetPasswordPage/>
+          <ResetPasswordPage />
         </PublicRoute>
       ),
     },
@@ -84,7 +86,8 @@ function App() {
       path: "/interview",
       element: (
         <PrivateRoute>
-          <InterviewPage />
+          {/* <InterviewPage /> */}
+          <NewIntPage />
         </PrivateRoute>
       ),
     },
