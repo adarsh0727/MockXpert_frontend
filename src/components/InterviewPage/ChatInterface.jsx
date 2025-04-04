@@ -1,20 +1,26 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import useInterviewStore from "../../store/useInterviewStore";
+import { useRef, useEffect } from "react";
 
 const ChatInterface = () => {
-  // Initial messages array
   const { currentConversation } = useInterviewStore();
-
+  const messageEndRef = useRef(null);
+  useEffect(() => {
+    if (messageEndRef.current && currentConversation) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentConversation]);
   return (
     <div className="flex flex-col h-screen w-full mx-auto p-4">
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {currentConversation.map((message) => (
+          {currentConversation.map((message, index) => (
             <div
-              key={message.id}
+              key={message.id || index}
               className={`flex items-start gap-2 ${
                 message.role === "user" ? "flex-row-reverse" : ""
               }`}
+              ref={messageEndRef}
             >
               <div
                 className={`rounded-lg px-3 py-2 max-w-xs ${
