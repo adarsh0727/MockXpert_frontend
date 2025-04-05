@@ -3,7 +3,7 @@ import useInterviewStore from "../../store/useInterviewStore";
 import { useRef, useEffect } from "react";
 
 const ChatInterface = () => {
-  const { conversation } = useInterviewStore();
+  const { conversation, currentCoversationIndex } = useInterviewStore();
   const messageEndRef = useRef(null);
   useEffect(() => {
     if (messageEndRef.current && conversation) {
@@ -11,10 +11,10 @@ const ChatInterface = () => {
     }
   }, [conversation]);
   return (
-    <div className="flex flex-col h-screen w-full mx-auto p-4">
+    <div className="flex flex-col h-full w-full mx-auto p-4">
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
-          {conversation.map((message, index) => (
+          {conversation.slice(currentCoversationIndex).map((message, index) => (
             <div
               key={message.id || index}
               className={`flex items-start gap-2 ${
