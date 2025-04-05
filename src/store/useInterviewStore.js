@@ -36,6 +36,7 @@ const useInterviewStore = create((set, get) => ({
   isLoading: false,
 
   conversation: [],
+  currentCoversationIndex: 0,
 
   setFormData: async (data) => {
     set({ isLoading: true });
@@ -55,7 +56,7 @@ const useInterviewStore = create((set, get) => ({
   },
 
   startInterview: async () => {
-    set({ isLoading: true, nextQuestionReady: false });
+    set({ isLoading: true, nextQuestionReady: false, conversation: [] });
 
     const { formData } = get();
 
@@ -71,6 +72,7 @@ const useInterviewStore = create((set, get) => ({
       role: "system",
       content: `
 You are a senior technical interviewer conducting mock interviews for the role of ${jobRole} at ${targetCompany}.
+Start Your interview with a warm greeting to the candidate wait for it's response and then ask him question.
 Ask one interview question at a time. Wait for the candidate's answer before asking follow-ups.
 After the candidate answers, analyze their response and determine if:
 - Follow-up questions are needed to go deeper on weak parts, or
@@ -101,9 +103,13 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
       { content: response.data.reply, role: "assistant" },
     ];
 
-    set({ conversation: updatedConversation, isLoading: false });
+    set({
+      conversation: updatedConversation,
+      currentCoversationIndex: 2,
+      isLoading: false,
+    });
   },
-  
+
   sendMessage: async (event) => {
     event.preventDefault();
     set({ generatingResponse: true });
@@ -112,7 +118,7 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
     const { conversation } = get();
 
     const hasSystemMessage = conversation.some(
-      (msg) => msg.role === "system" || msg.role === "developer"
+      (msg) => msg.role === "system" || msg.role === "developer",
     );
 
     const systemMessage = {
@@ -166,7 +172,7 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
     } catch (error) {
       console.error(
         "❌ [Frontend] Error fetching AI response:",
-        error?.response?.data || error.message
+        error?.response?.data || error.message,
       );
     } finally {
       set({ generatingResponse: false });
@@ -174,7 +180,11 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
   },
 
   generateNewQuestion: async () => {
-    set({ isLoading: true, nextQuestionReady: false, interviewShouldEnd: false });
+    set({
+      isLoading: true,
+      nextQuestionReady: false,
+      interviewShouldEnd: false,
+    });
 
     const { formData, conversation } = get();
 
@@ -212,6 +222,7 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
     };
 
     set((state) => ({
+      currentCoversationIndex: state.conversation.length + 1,
       conversation: [...state.conversation, userMessage, assistantMessage],
       isLoading: false,
       nextQuestionReady: false,
@@ -220,35 +231,37 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
   },
   endInterview: async (navigate) => {
     const { conversation, interviewId, formData } = get();
-  
+
     // Convert chat messages into formatted feedback string
     const feedback = conversation
       .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
       .join("\n\n");
-  
+
     try {
       const response = await axiosInstance.post("/portal/analysis", {
         interviewId,
         feedback,
         formData,
       });
-  
+
       console.log("✅ Analysis complete:", response.data);
       const { pdfUrl } = response.data;
       if (pdfUrl) {
         window.open(pdfUrl, "_blank");
       }
-  
+
       // Optionally: Store report URL or trigger UI updates
       set({ analysisReport: response.data });
       if (navigate) {
-        navigate("/profile");
+        navigate("/");
       }
-  
     } catch (error) {
-      console.error("❌ Failed to generate analysis:", error?.response?.data || error.message);
+      console.error(
+        "❌ Failed to generate analysis:",
+        error?.response?.data || error.message,
+      );
     }
-  },  
+  },
 }));
 
 export default useInterviewStore;
