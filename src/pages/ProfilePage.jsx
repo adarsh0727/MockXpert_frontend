@@ -9,11 +9,11 @@ const ProfilePage = () => {
   const { interviews, fetchUserInterviews, isLoading } = useInterviewStore();
 
   useEffect(() => {
-    fetchUserInterviews(); 
-  }, []);
+    fetchUserInterviews();
+  }, [fetchUserInterviews]);
 
   const sortedInterviews = [...interviews].sort(
-    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
   );
 
   return (
@@ -27,7 +27,9 @@ const ProfilePage = () => {
       ) : sortedInterviews.length > 0 ? (
         <InterviewStats interviews={sortedInterviews} />
       ) : (
-        <p className="text-center text-gray-500 mt-4">No interview data available</p>
+        <p className="text-center text-gray-500 mt-4">
+          No interview data available
+        </p>
       )}
     </div>
   );

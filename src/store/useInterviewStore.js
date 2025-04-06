@@ -1,8 +1,6 @@
-import { create } from 'zustand';
-import { axiosInstance } from '../lib/axios';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
-
+import { create } from "zustand";
+import { axiosInstance } from "../lib/axios";
+import { toast } from "sonner";
 
 const detectEndIntent = (message) => {
   const lower = message.toLowerCase();
@@ -17,13 +15,12 @@ const detectEndIntent = (message) => {
     "all the best",
     "end of the interview",
     "Thank you for sharing your insights and experiences with me today.",
-    "wrap up"
+    "wrap up",
   ];
   return endPhrases.some((phrase) => lower.includes(phrase));
 };
 
 export const useInterviewStore = create((set, get) => ({
-
   formData: {
     name: "",
     company: "",
@@ -48,27 +45,27 @@ export const useInterviewStore = create((set, get) => ({
     const { startInterview } = get();
 
     try {
-        console.log("Sending data:", data);
-        const response = await axiosInstance.post("/interview/", data);
-        console.log("Response received:", response.data);
-  
-        set((state) => {
-          const updatedFormData = { ...state.formData, ...data };
-          console.log("Updated formData state:", updatedFormData);
-          return {
-            formData: updatedFormData,
-            interviewId: response.data.interviewId,
-          };
-        });
-  
-        toast.success("Form submitted successfully!");
-        startInterview();
-        set({ isLoading: false });
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        toast.error("Failed to submit form. Please try again.");
-      }
-    },
+      console.log("Sending data:", data);
+      const response = await axiosInstance.post("/interview/", data);
+      console.log("Response received:", response.data);
+
+      set((state) => {
+        const updatedFormData = { ...state.formData, ...data };
+        console.log("Updated formData state:", updatedFormData);
+        return {
+          formData: updatedFormData,
+          interviewId: response.data.interviewId,
+        };
+      });
+
+      toast.success("Form submitted successfully!");
+      startInterview();
+      set({ isLoading: false });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to submit form. Please try again.");
+    }
+  },
 
   startInterview: async () => {
     set({ isLoading: true, nextQuestionReady: false, conversation: [] });
@@ -101,7 +98,9 @@ Use <<END_INTERVIEW>> to end the interview.
     };
 
     const initialMessages = [systemMessage, userMessage];
-    const response = await axiosInstance.post("/chat", { messages: initialMessages });
+    const response = await axiosInstance.post("/chat", {
+      messages: initialMessages,
+    });
 
     const updatedConversation = [
       ...initialMessages,
@@ -266,15 +265,13 @@ Use <<END_INTERVIEW>> to end the interview.
       );
     }
   },
-  interviews: [],
-  isLoading: false,
   fetchUserInterviews: async () => {
     set({ isLoading: true });
     try {
-      const res = await axiosInstance.get('/interview');
+      const res = await axiosInstance.get("/interview");
       set({ interviews: res.data });
     } catch (error) {
-      console.error('Error fetching interviews:', error);
+      console.error("Error fetching interviews:", error);
     } finally {
       set({ isLoading: false });
     }
