@@ -51,7 +51,7 @@ const PersonalInfo = ({ atsScore }) => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleButtonClick} disabled={isUpdatingProfile}>
+              <Button onClick={handleButtonClick} disabled={isUpdatingProfile} className="hover:cursor-pointer">
                 {isUpdatingProfile ? "Uploading..." : "Upload Photo"}
               </Button>
               <input
@@ -62,7 +62,7 @@ const PersonalInfo = ({ atsScore }) => {
                 className="hidden"
               />
               {/* <Button>upload resume</Button> */}
-              <Button onClick={() => window.open(authUser.resumeUrl, "_blank")}>
+              <Button onClick={() => window.open(authUser.resumeUrl, "_blank")} className="hover:cursor-pointer">
                 view resume
               </Button>
             </div>

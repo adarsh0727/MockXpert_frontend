@@ -41,7 +41,7 @@ const Navbar = () => {
           <div>
             <button
               className={`
-              rounded-full font-medium transition-all duration-200
+              rounded-full font-medium transition-all duration-200 hover:cursor-pointer
               ${
                 scrolled
                   ? "bg-gradient-to-r from-sky-600 to-blue-600 text-white hover:shadow-lg"

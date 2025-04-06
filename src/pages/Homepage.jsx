@@ -77,14 +77,15 @@ const HeroSection = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <button
-                className="bg-white text-blue-800 hover:bg-blue-50 px-6 py-3 rounded-full font-bold shadow-lg transition flex items-center"
+                className="bg-white text-blue-800 hover:bg-blue-50 px-6 py-3 rounded-full font-bold shadow-lg transition flex items-center hover:cursor-pointer"
                 onClick={() => navigate("/get-started")}
               >
                 Start Practicing <ArrowRight className="ml-2 h-5 w-5" />
               </button>
-              <button className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-3 rounded-full font-bold transition flex items-center">
+              
+              <a href="https://www.youtube.com/watch?v=DCXWA5oSea0" target="_blank" className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-3 rounded-full font-bold transition flex items-center hover:cursor-pointer">
                 Watch Demo <PlayCircle className="ml-2 h-5 w-5" />
-              </button>
+              </a>
             </div>
           </div>
           <div className="md:w-1/2">
@@ -282,6 +283,7 @@ const FAQSection = () => {
 
 // CTA Section Component
 const CTASection = () => {
+  const navigate=useNavigate();
   return (
     <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -296,12 +298,14 @@ const CTASection = () => {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-white text-blue-700 hover:bg-blue-50 px-8 py-3 rounded-full font-bold shadow-lg transition flex items-center justify-center">
+            <button 
+              onClick={()=>{navigate('/get-started')}}
+              className="bg-white text-blue-700 hover:cursor-pointer hover:bg-blue-50 px-8 py-3 rounded-full font-bold shadow-lg transition flex items-center justify-center">
               Get Started Now <ArrowRight className="ml-2 h-5 w-5" />
             </button>
-            <button className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-8 py-3 rounded-full font-bold transition flex items-center justify-center">
-              Schedule Demo
-            </button>
+            <a href="https://www.youtube.com/watch?v=DCXWA5oSea0" target="_blank" className="bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-3 rounded-full font-bold transition flex items-center hover:cursor-pointer">
+              Watch Demo <PlayCircle className="ml-2 h-5 w-5" />
+            </a>
           </div>
         </div>
       </div>

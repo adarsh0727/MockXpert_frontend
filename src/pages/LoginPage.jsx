@@ -103,7 +103,7 @@ const LoginPage = () => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full hover:cursor-pointer">
                     Submit
                   </Button>
                 </form>
@@ -167,7 +167,7 @@ const LoginPage = () => {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full hover:cursor-pointer">
                     Submit
                   </Button>
                 </form>
