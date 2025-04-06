@@ -1,4 +1,4 @@
-import { Home, LogOut, Book, GraduationCap } from "lucide-react";
+import { Home, LogOut, Book, GraduationCap, SearchCodeIcon } from "lucide-react";
 
 import {
   Sidebar,
@@ -30,6 +30,11 @@ const items = [
     title: "Portal",
     url: "/portal",
     icon: GraduationCap,
+  },
+  {
+    title: "Resume Analyser",
+    url: "/analyser",
+    icon: SearchCodeIcon,
   },
 ];
 

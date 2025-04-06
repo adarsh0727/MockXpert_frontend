@@ -3,7 +3,7 @@ import { axiosInstance } from "../lib/axios";
 import { toast } from "sonner";
 
 const BASE_URL =
-  import.meta.env.MODE === "development" ? "http://localhost:5001/api" : "/";
+  import.meta.env.MODE === "development" ? "http://localhost:3001/api" : "/";
 
 export const useFormStore = create((set,get) => ({
   formData: {

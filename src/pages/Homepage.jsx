@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import TestimonialsSection from "../components/Testimonial";
-import Feature from "../components/Feature";
+import Feature from "../components/Features";
 import Footer from "../components/Footers";
 import Navbar from "../components/navbar";
 import { useNavigate } from "react-router-dom";

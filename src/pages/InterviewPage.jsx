@@ -4,7 +4,7 @@ import { ResizablePanelGroup } from "@/components/ui/resizable";
 import ConversationPanel from '../components/interviewPage/ConservationPanel';
 import ResponsePanel from '../components/interviewPage/ResponsePanel';
 import InterviewHeader from '../components/interviewPage/InterviewHeader';
-import { useInterviewStore } from "@/store/useInterviewStore";
+import { useInterviewStore } from "../store/useInterviewStore";
 
 
 const InterviewPage = () => {

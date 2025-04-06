@@ -1,24 +1,29 @@
-import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
+import { create } from 'zustand';
+import { axiosInstance } from '../lib/axios';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+
+
 const detectEndIntent = (message) => {
   const lower = message.toLowerCase();
-
   const endPhrases = [
     "thank you for participating",
-    "Thank you for participating in the mock interview",
     "that concludes our mock interview",
-    "Good Luck",
+    "good luck",
     "if you have any feedback",
     "feel free to reach out",
     "wish you all the best",
     "great talking with you",
     "all the best",
     "end of the interview",
+    "Thank you for sharing your insights and experiences with me today.",
+    "wrap up"
   ];
-
   return endPhrases.some((phrase) => lower.includes(phrase));
 };
-const useInterviewStore = create((set, get) => ({
+
+export const useInterviewStore = create((set, get) => ({
+
   formData: {
     name: "",
     company: "",
@@ -27,33 +32,43 @@ const useInterviewStore = create((set, get) => ({
     prefferedLanguage: "",
     codingRound: false,
   },
-
   interviewId: null,
   nextQuestionReady: false,
   analysisReport: null,
   interviewShouldEnd: false,
   generatingResponse: false,
   isLoading: false,
-
   conversation: [],
   currentCoversationIndex: 0,
+  interviews: [],
 
   setFormData: async (data) => {
     set({ isLoading: true });
 
     const { startInterview } = get();
 
-    const response = await axiosInstance.post("/interview", data);
-
-    set((state) => ({
-      formData: { ...state.formData, ...data },
-      interviewId: response.data.interviewId,
-    }));
-
-    startInterview();
-
-    set({ isLoading: false });
-  },
+    try {
+        console.log("Sending data:", data);
+        const response = await axiosInstance.post("/interview/", data);
+        console.log("Response received:", response.data);
+  
+        set((state) => {
+          const updatedFormData = { ...state.formData, ...data };
+          console.log("Updated formData state:", updatedFormData);
+          return {
+            formData: updatedFormData,
+            interviewId: response.data.interviewId,
+          };
+        });
+  
+        toast.success("Form submitted successfully!");
+        startInterview();
+        set({ isLoading: false });
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        toast.error("Failed to submit form. Please try again.");
+      }
+    },
 
   startInterview: async () => {
     set({ isLoading: true, nextQuestionReady: false, conversation: [] });
@@ -72,35 +87,25 @@ const useInterviewStore = create((set, get) => ({
       role: "system",
       content: `
 You are a senior technical interviewer conducting mock interviews for the role of ${jobRole} at ${targetCompany}.
-Start Your interview with a warm greeting to the candidate wait for it's response and then ask him question.
-Ask one interview question at a time. Wait for the candidate's answer before asking follow-ups.
-After the candidate answers, analyze their response and determine if:
-- Follow-up questions are needed to go deeper on weak parts, or
-- The answer is sufficient and you can proceed to the next question.
-
-✅ When ready to move on, append: <<NEXT_QUESTION>>
-🛑 To end the interview, append: <<END_INTERVIEW>>
-
-Do not say these tokens aloud. Use them only at the end of your message for system logic.
-      `,
+Start your interview with a warm greeting. Ask one question at a time, wait for answers.
+Use <<NEXT_QUESTION>> to indicate readiness for the next.
+Use <<END_INTERVIEW>> to end the interview.
+      `.trim(),
     };
 
     const userMessage = {
       role: "user",
       content: codingRound
-        ? `Generate a medium-level technical question for a ${jobRole} role at ${targetCompany}, considering ${yearsOfExperience} years of experience and ${preferredLanguage}.`
-        : `Generate a theoretical managerial question for a ${jobRole} position at ${targetCompany} with ${yearsOfExperience} years of experience.`,
+        ? `Generate a technical question for a ${jobRole} role at ${targetCompany} using ${preferredLanguage}, experience: ${yearsOfExperience} years.`
+        : `Generate a theoretical/behavioral question for a ${jobRole} role at ${targetCompany}, with ${yearsOfExperience} years of experience.`,
     };
 
     const initialMessages = [systemMessage, userMessage];
-
-    const response = await axiosInstance.post("/chat", {
-      messages: initialMessages,
-    });
+    const response = await axiosInstance.post("/chat", { messages: initialMessages });
 
     const updatedConversation = [
       ...initialMessages,
-      { content: response.data.reply, role: "assistant" },
+      { role: "assistant", content: response.data.reply },
     ];
 
     set({
@@ -111,10 +116,11 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
   },
 
   sendMessage: async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
+    if (!event || event.trim() === "") return;
     set({ generatingResponse: true });
 
-    const userMessage = event.target.querySelector("textarea").value;
+    const userMessage = event.trim();
     const { conversation } = get();
 
     const hasSystemMessage = conversation.some(
@@ -229,7 +235,8 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
       interviewShouldEnd: false,
     }));
   },
-  endInterview: async (navigate) => {
+
+  endInterview: async () => {
     const { conversation, interviewId, formData } = get();
 
     // Convert chat messages into formatted feedback string
@@ -252,9 +259,6 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
 
       // Optionally: Store report URL or trigger UI updates
       set({ analysisReport: response.data });
-      if (navigate) {
-        navigate("/");
-      }
     } catch (error) {
       console.error(
         "❌ Failed to generate analysis:",
@@ -262,6 +266,17 @@ Do not say these tokens aloud. Use them only at the end of your message for syst
       );
     }
   },
+  interviews: [],
+  isLoading: false,
+  fetchUserInterviews: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get('/interview');
+      set({ interviews: res.data });
+    } catch (error) {
+      console.error('Error fetching interviews:', error);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 }));
-
-export default useInterviewStore;
