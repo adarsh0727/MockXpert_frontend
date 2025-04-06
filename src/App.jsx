@@ -9,24 +9,24 @@ import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/Homepage";
 import ProfilePage from "./pages/ProfilePage";
 import ResourcePage from "./pages/ResourcePage";
+import InterviewForm from "./pages/InterviewFormPage";
+import ResumeAnalysisPage from "./pages/ResumeAnalysisPage";
+import InterviewPage from "./pages/InterviewPage";
+
 
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-
 import PortalPage from "./pages/PortalPage";
-import InterviewForm from "./pages/InterviewFormPage";
-// import InterviewPage from "./pages/InterviewPage";
-import OTPVerificationPage from "./pages/OtpVerifivation";
-import ResetPasswordPage from "./pages/ResetPassword";
-import NewIntPage from "./pages/InterviewPageNew";
+
+
 
 // Redirect logged-in users from public pages
 function PublicRoute({ children }) {
   const { authUser } = useAuthStore();
-  // console.log({ authUser });
+  console.log({ authUser });
   return authUser ? <Navigate to="/" replace /> : children;
 }
 
@@ -55,20 +55,8 @@ function App() {
       ),
     },
     {
-      path: "/forgot-password",
-      element: (
-        <PublicRoute>
-          <OTPVerificationPage />
-        </PublicRoute>
-      ),
-    },
-    {
-      path: "/reset-password",
-      element: (
-        <PublicRoute>
-          <ResetPasswordPage />
-        </PublicRoute>
-      ),
+      path: "/",
+      element: <HomePage />,
     },
     {
       path: "/home",
@@ -79,15 +67,6 @@ function App() {
       element: (
         <PrivateRoute>
           <InterviewForm />
-        </PrivateRoute>
-      ),
-    },
-    {
-      path: "/interview",
-      element: (
-        <PrivateRoute>
-          {/* <InterviewPage /> */}
-          <NewIntPage />
         </PrivateRoute>
       ),
     },
@@ -119,6 +98,22 @@ function App() {
             </PrivateRoute>
           ),
         },
+        {
+          path: "analyser",
+          element: (
+            <PrivateRoute>
+              <ResumeAnalysisPage />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "interview",
+          element: (
+            <PrivateRoute>
+              <InterviewPage />
+            </PrivateRoute>
+          ),
+        },
       ],
     },
   ]);
@@ -132,7 +127,7 @@ function App() {
 
   return (
     <div>
-      <RouterProvider router={router} />
+      <RouterProvider router={router}  />
       <Toaster />
     </div>
   );
