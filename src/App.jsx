@@ -13,15 +13,12 @@ import InterviewForm from "./pages/InterviewFormPage";
 import ResumeAnalysisPage from "./pages/ResumeAnalysisPage";
 import InterviewPage from "./pages/InterviewPage";
 
-
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
 import PortalPage from "./pages/PortalPage";
-
-
 
 // Redirect logged-in users from public pages
 function PublicRoute({ children }) {
@@ -33,7 +30,7 @@ function PublicRoute({ children }) {
 // Protect routes that require authentication
 function PrivateRoute({ children }) {
   const { authUser } = useAuthStore();
-  return authUser ? children : <Navigate to="/home" replace />;
+  return authUser ? children : <Navigate to="/" replace />;
 }
 
 function App() {
@@ -127,7 +124,7 @@ function App() {
 
   return (
     <div>
-      <RouterProvider router={router}  />
+      <RouterProvider router={router} />
       <Toaster />
     </div>
   );
