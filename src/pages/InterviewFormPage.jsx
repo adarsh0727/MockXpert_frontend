@@ -1,5 +1,4 @@
 "use client";
-
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,23 +21,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import useInterviewStore from "../store/useInterviewStore";
+// import { useFormStore } from "../store/useFormStore";
+import { ChevronLeft } from "lucide-react";
+import { useInterviewStore } from "../store/useInterviewStore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  company: z
-    .string()
-    .min(2, { message: "Company name must be at least 2 characters." }),
-  role: z
-    .string()
-    .min(2, { message: "Job role must be at least 2 characters." }),
+  company: z.string().min(2, { message: "Company name must be at least 2 characters." }),
+  role: z.string().min(2, { message: "Job role must be at least 2 characters." }),
   experience: z.string().min(1, { message: "Experience is required." }),
-  prefferedLanguage: z
-    .string()
-    .min(2, { message: "Preferred language must be at least 2 characters." }),
-  interviewType: z.string({
-    required_error: "Please select an interview type.",
-  }),
+  prefferedLanguage: z.string().min(2, { message: "Preferred language must be at least 2 characters." }),
+  interviewType: z.string({ required_error: "Please select an interview type." }),
 });
 
 const InterviewForm = () => {
@@ -50,119 +43,100 @@ const InterviewForm = () => {
       company: "",
       role: "",
       experience: "",
-      prefferedLanguage: "", // Fixed: Ensured the field name matches schema
+      prefferedLanguage: "",
       interviewType: "",
     },
   });
 
   const { setFormData } = useInterviewStore();
 
-  // ✅ Corrected submit function
   function onSubmit(values) {
-    console.log("Form values before modification:", values);
-
-    const updatedValues = { 
-      ...values, 
-      codingRound: values.interviewType === "Technical"
+    const updatedValues = {
+      ...values,
+      codingRound: values.interviewType === "Technical",
     };
-
     setFormData(updatedValues);
-    console.log("Form values after modification:", updatedValues);
-
-    navigate("/interview");  
+    navigate("/interview");
   }
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-1/4"
+    <>
+    <div className="h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <Button
+        onClick={() => navigate("/portal")}
+        variant="outline"
+        size="icon"
+        className="absolute top-4 left-4"
         >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
+            <ChevronLeft />
+        </Button>
+        <h2 className="text-2xl font-semibold mb-6 text-center">Interview Form</h2>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/** Name */}
+            <FormField control={form.control} name="name" render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel className="font-medium">Full Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="name" {...field} />
+                  <Input placeholder="John Doe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          <FormField
-            control={form.control}
-            name="company"
-            render={({ field }) => (
+            {/** Company */}
+            <FormField control={form.control} name="company" render={({ field }) => (
               <FormItem>
-                <FormLabel>Company</FormLabel>
+                <FormLabel className="font-medium">Company</FormLabel>
                 <FormControl>
                   <Input placeholder="Google" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
+            {/** Role */}
+            <FormField control={form.control} name="role" render={({ field }) => (
               <FormItem>
-                <FormLabel>Job Role</FormLabel>
+                <FormLabel className="font-medium">Job Role</FormLabel>
                 <FormControl>
-                  <Input placeholder="SWE" {...field} />
+                  <Input placeholder="Software Engineer" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          <FormField
-            control={form.control}
-            name="experience"
-            render={({ field }) => (
+            {/** Experience */}
+            <FormField control={form.control} name="experience" render={({ field }) => (
               <FormItem>
-                <FormLabel>Experience</FormLabel>
+                <FormLabel className="font-medium">Years of Experience</FormLabel>
                 <FormControl>
                   <Input placeholder="1" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          {/* ✅ Fixed: Field name matches schema */}
-          <FormField
-            control={form.control}
-            name="prefferedLanguage"
-            render={({ field }) => (
+            {/** Language */}
+            <FormField control={form.control} name="prefferedLanguage" render={({ field }) => (
               <FormItem>
-                <FormLabel>Preferred Language</FormLabel>
+                <FormLabel className="font-medium">Preferred Language</FormLabel>
                 <FormControl>
-                  <Input placeholder="Python" {...field} />
+                  <Input placeholder="JavaScript" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          <FormField
-            control={form.control}
-            name="interviewType"
-            render={({ field }) => (
+            {/** Interview Type */}
+            <FormField control={form.control} name="interviewType" render={({ field }) => (
               <FormItem>
-                <FormLabel>Interview Type</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <FormLabel className="font-medium">Interview Type</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Type of Interview" />
+                      <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -172,13 +146,19 @@ const InterviewForm = () => {
                 </Select>
                 <FormMessage />
               </FormItem>
-            )}
-          />
+            )} />
 
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
+            <Button
+              type="submit"
+              className="w-full mt-4"
+            >
+              Submit
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
+    </>
   );
 };
 

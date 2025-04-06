@@ -56,7 +56,7 @@ const LoginPage = () => {
   return (
     <div className="h-screen flex flex-col gap-16 justify-center items-center bg-gradient-to-r from-blue-800 to-indigo-900 text-white">
       <div className="text-4xl font-bold">
-        Be Interview Ready with Interview Whiz
+        Be Interview Ready with mockXpert
       </div>
       <Tabs defaultValue="login" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
