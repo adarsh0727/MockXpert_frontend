@@ -7,7 +7,7 @@ const PortalPage = () => {
 
   return (
     <>
-      <div className="p-4 m-4 bg-background border rounded-lg">
+      <div className="p-4 m-4 bg-accent border rounded-lg">
         <div className="text-2xl font-bold">
           Ready For your next practice session?
         </div>

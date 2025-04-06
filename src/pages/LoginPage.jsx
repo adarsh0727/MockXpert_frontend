@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuthStore } from "../store/useAuthStore";
-import { Link } from "react-router-dom";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +38,7 @@ const signupSchema = z.object({
 const LoginPage = () => {
   const { login, signup } = useAuthStore();
 
+  // 1. Define your form.
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -56,7 +56,7 @@ const LoginPage = () => {
   return (
     <div className="h-screen flex flex-col gap-16 justify-center items-center bg-gradient-to-r from-blue-800 to-indigo-900 text-white">
       <div className="text-4xl font-bold">
-        Be Interview Ready with InterviewViz
+        Be Interview Ready with Interview Whiz
       </div>
       <Tabs defaultValue="login" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
@@ -97,7 +97,7 @@ const LoginPage = () => {
                           <Input placeholder="password" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Enter your email address.
+                          Enter Your Password.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -106,11 +106,6 @@ const LoginPage = () => {
                   <Button type="submit" className="w-full">
                     Submit
                   </Button>
-                  <div className="text-center mt-2">
-                    <Link to="/forgot-password" className="text-sm text-blue-300 hover:underline">
-                      Forgot Password?
-                    </Link>
-                  </div>
                 </form>
               </Form>
             </CardContent>
@@ -134,7 +129,7 @@ const LoginPage = () => {
                           <Input placeholder="username" {...field} />
                         </FormControl>
                         <FormDescription>
-                          This is your public display name.
+                          Enter Your Username.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -166,7 +161,7 @@ const LoginPage = () => {
                           <Input placeholder="password" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Enter your email address.
+                          Enter Some Strong Password.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

@@ -7,13 +7,13 @@ import {
   Mic,
   ChevronRight,
   ChevronDown,
-  ChevronUp,
+  ChevronUp
 } from "lucide-react";
 import { useState } from "react";
-import Navbar from "../components/Navbar";
-import TestimonialsSection from "../components/Reveiws";
-import Feature from "../components/Features";
+import TestimonialsSection from "../components/Testimonial";
+import Feature from "../components/Feature";
 import Footer from "../components/Footers";
+import Navbar from "../components/navbar";
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
@@ -25,33 +25,19 @@ const HomePage = () => {
       {/* Main Content */}
       <main className="flex-grow">
         {/* Hero Section */}
-        <section id="home">
-          {" "}
-          <HeroSection />{" "}
-        </section>
+        <section id="home"> <HeroSection /> </section>
 
         {/* Features Section */}
-        <section id="features">
-          <FeaturesSection />{" "}
-        </section>
+        <section id="features"><FeaturesSection />  </section>
 
         {/* FAQs */}
-        <section id="faqs">
-          {" "}
-          <FAQSection />{" "}
-        </section>
+        <section id="faqs"> <FAQSection /> </section>
 
         {/* Testimonials */}
-        <section id="testimonials">
-          {" "}
-          <TestimonialsSection />{" "}
-        </section>
+        <section id="testimonials"> <TestimonialsSection />  </section>
 
         {/* CTA Section */}
-        <section id="ctasection">
-          {" "}
-          <CTASection />{" "}
-        </section>
+        <section id="ctasection"> <CTASection /> </section>
       </main>
 
       {/* Footer */}
@@ -284,6 +270,8 @@ const FAQSection = () => {
     </section>
   );
 };
+
+
 
 // CTA Section Component
 const CTASection = () => {
