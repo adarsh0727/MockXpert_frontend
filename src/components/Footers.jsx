@@ -10,12 +10,12 @@ const Footer = () => {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center mb-4">
                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">IW</span>
+                  <span className="text-white font-bold text-xl">MX</span>
                 </div>
-                <span className="ml-3 font-bold text-xl text-white">Interview Whiz</span>
+                <span className="ml-3 font-bold text-xl text-white">MockXpert</span>
               </div>
               <p className="text-gray-400 mb-6 max-w-md">
-                Interview Whiz helps professionals prepare for interviews with AI-powered practice sessions and personalized feedback.
+                MockXpert helps professionals prepare for interviews with AI-powered practice sessions and personalized feedback.
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-white transition">
@@ -94,8 +94,6 @@ const Footer = () => {
               <h3 className="font-bold text-lg mb-4">Resources</h3>
               <ul className="space-y-2">
                 <li><a href="#" className="text-gray-400 hover:text-white transition">Help Center</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition">Interview Tips</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition">Career Resources</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
                 <li><a href="#" className="text-gray-400 hover:text-white transition">Terms of Service</a></li>
               </ul>
@@ -103,7 +101,7 @@ const Footer = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
-            <p>&copy; {new Date().getFullYear()} Interview Whiz. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} MockXpert. All rights reserved.</p>
           </div>
         </div>
       </footer>

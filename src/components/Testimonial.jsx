@@ -2,13 +2,13 @@
 const TestimonialsSection = () => {
     const testimonials = [
       {
-        quote: "MockPro helped me land my dream job at a top tech company. The feedback was incredibly insightful.",
+        quote: "MockXpert helped me land my dream job at a top tech company. The feedback was incredibly insightful.",
         name: "Sarah J.",
         role: "Software Engineer",
         company: "Tech Giant"
       },
       {
-        quote: "After using MockPro for two weeks, I felt so much more confident in my interviews. Highly recommend!",
+        quote: "After using MockXpert for two weeks, I felt so much more confident in my interviews. Highly recommend!",
         name: "Michael T.",
         role: "Product Manager",
         company: "Startup Inc."

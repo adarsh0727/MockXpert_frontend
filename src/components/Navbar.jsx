@@ -28,12 +28,12 @@ const Navbar = () => {
           {/* Logo and Website Name */}
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-xl">IW</span>
+              <span className="text-white font-bold text-xl">MX</span>
             </div>
             <span
               className={`ml-3 font-bold text-xl ${scrolled ? "text-sky-800" : "text-white"}`}
             >
-              Interview Whiz
+              MockXpert
             </span>
           </div>
 

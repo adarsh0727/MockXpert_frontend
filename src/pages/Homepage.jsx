@@ -189,7 +189,7 @@ const FeaturesSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            How MockPro Works
+            How MockXpert Works
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Our platform uses advanced AI to help you practice and improve your
@@ -203,11 +203,6 @@ const FeaturesSection = () => {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <button className="inline-flex items-center text-blue-600 font-bold hover:text-blue-800 transition">
-            Learn about all features <ChevronRight className="ml-1 h-4 w-4" />
-          </button>
-        </div>
       </div>
     </section>
   );
