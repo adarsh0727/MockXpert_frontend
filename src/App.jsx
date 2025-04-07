@@ -30,7 +30,7 @@ function PublicRoute({ children }) {
 // Protect routes that require authentication
 function PrivateRoute({ children }) {
   const { authUser } = useAuthStore();
-  return authUser ? children : <Navigate to="/" replace />;
+  return authUser ? children : <Navigate to="/home" replace />;
 }
 
 function App() {
