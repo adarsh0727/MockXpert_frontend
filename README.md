@@ -38,7 +38,7 @@ This project is ideal for students, professionals, and job seekers who want to s
 ## Folder Structure (Frontend)
 
 
-HackBytes3.O_Frontend/
+MockXpert_Frontend/
 ├── public/            
 ├── src/                        # Main source code
 │   ├── assets/                # Static images, logos, etc.
