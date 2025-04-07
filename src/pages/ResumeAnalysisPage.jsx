@@ -1,9 +1,10 @@
 // src/pages/ResumeAnalysisPage.jsx
-import React, { useState } from "react";
-import UploadZone from "../components/ResumeAnalyser/UploadZone";
-import AnalysisStatus from "../components/ResumeAnalyser/AnalysisStatus";
-import ResultTabs from "../components/ResumeAnalyser/ResultTabs";
-import { useAuthStore } from "../store/useAuthStore";
+import React, { useState } from 'react';
+import UploadZone from '../components/ResumeAnalyser/UploadZone';
+import AnalysisStatus from '../components/ResumeAnalyser/AnalysisStatus';
+import ResultTabs from '../components/ResumeAnalyser/ResultTabs';
+import { useAuthStore } from '../store/useAuthStore';
+import { axiosInstance } from '../lib/axios';
 
 export default function ResumeAnalysisPage() {
   const [file, setFile] = useState(null);
@@ -73,78 +74,56 @@ export default function ResumeAnalysisPage() {
 
     try {
       const formData = new FormData();
-      formData.append("resume", file);
-
-      const response = await fetch("/api/resume/upload-resume", {
-        method: "PUT",
+      formData.append('resume', file);
+  
+      // 1. Upload Resume
+      const uploadRes = await axiosInstance.put('/resume/upload-resume', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to upload resume");
-      }
-
-      // console.log('✅ Resume uploaded:', result.resumeUrl);
-      const resumeUrl = result.resumeUrl;
-      const atsResponse = await fetch("/api/resume/ats-score", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ resumeUrl }),
-      });
-
-      const atsData = await atsResponse.json();
-      if (!atsResponse.ok) throw new Error(atsData.message);
-
-      const score = parseInt(atsData.atsScore, 10);
-
-      // console.log('🎯 ATS Score:', score);
+      const resumeUrl = uploadRes.data.resumeUrl;
+  
+      // 2. Get ATS Score
+      const atsRes = await axiosInstance.post(
+        '/resume/ats-score',
+        { resumeUrl },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const score = parseInt(atsRes.data.atsScore, 10);
       updateScore({ atsScore: score });
-
-      const feedbackRes = await fetch("/api/resume/resume-feedback", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ resumeUrl }),
-      });
-
-      const feedbackData = await feedbackRes.json();
-      if (!feedbackRes.ok) {
-        throw new Error(
-          feedbackData.message || "Failed to fetch resume feedback.",
-        );
-      }
-
-      // console.log('🧠 Raw Feedback:', feedbackData.feedback);
-
-      // 4. Parse LLM feedback into usable sections
+  
+      // 3. Get Feedback
+      const feedbackRes = await axiosInstance.post(
+        '/resume/resume-feedback',
+        { resumeUrl },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      const feedbackText = feedbackRes.data.feedback;
       const strengths = [];
       const improvements = [];
-
-      const lines = feedbackData.feedback.split("\n");
-      let currentSection = "";
-
+      const lines = feedbackText.split('\n');
+      let currentSection = '';
+  
       for (let line of lines) {
         line = line.trim();
-
-        if (line.toLowerCase().startsWith("strength")) {
-          currentSection = "strengths";
+        if (line.toLowerCase().startsWith('strength')) {
+          currentSection = 'strengths';
           continue;
         } else if (line.toLowerCase().startsWith("improvement")) {
           currentSection = "improvements";
           continue;
         }
-
-        // Check for numbered list: "1. Text..." or "1) Text..."
+  
         const match = line.match(/^\d+[\.\)]\s+(.*)/);
         if (match) {
           const item = match[1].trim();
@@ -152,35 +131,28 @@ export default function ResumeAnalysisPage() {
           if (currentSection === "improvements") improvements.push(item);
         }
       }
-      const tipsRes = await fetch("/api/resume/resume-improvement-tips", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ resumeUrl }),
-      });
-
-      const tipsData = await tipsRes.json();
-      if (!tipsRes.ok) {
-        throw new Error(
-          tipsData.message || "Failed to fetch improvement tips.",
-        );
-      }
-
-      // console.log("📌 Improvement Tips:", tipsData.improvementTips);
-
-      // 6. Convert numbered tips to keywords array
+  
+      // 4. Get Improvement Tips
+      const tipsRes = await axiosInstance.post(
+        '/resume/resume-improvement-tips',
+        { resumeUrl },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
       const keywords = [];
-      const tipsLines = tipsData.improvementTips.split("\n");
+      const tipsLines = tipsRes.data.improvementTips.split('\n');
       for (let line of tipsLines) {
         const match = line.trim().match(/^\d+[\.\)]\s+(.*)/);
         if (match) {
           keywords.push(match[1].trim());
         }
       }
-
-      // 3. Update frontend with the result
+  
+      // 5. Update UI
       setAnalysisResults((prev) => ({
         ...prev,
         score,
@@ -188,16 +160,17 @@ export default function ResumeAnalysisPage() {
         improvements,
         keywords,
       }));
-
       setAnalysisComplete(true);
     } catch (err) {
-      console.error("❌ Upload failed:", err);
-      alert("Resume upload failed. Please try again.");
+      console.error('❌ Error:', err);
+      alert(err.response?.data?.message || 'Something went wrong. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }
   };
-
+  
+  
+  
   // Reset state for reupload
   const handleReupload = () => {
     setFile(null);
