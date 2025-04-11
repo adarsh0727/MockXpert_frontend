@@ -13,12 +13,12 @@ import {
 
 const resources = [
   {
-    id: "top-gfg-questions",
-    title: "Top GFG Questions",
+    id: "google-interview-question",
+    title: "Google Interview Questions",
     description:
-      "Practice the most asked interview questions curated from GeeksforGeeks.",
+      "Practice the most asked interview questions in Google curated from InterviewBit.",
     icon: <ClipboardList />,
-    link: "https://www.geeksforgeeks.org/must-do-coding-questions-for-product-based-companies/",
+    link: "https://www.interviewbit.com/google-interview-questions/",
   },
   {
     id: "striver-sheet",
@@ -29,21 +29,22 @@ const resources = [
     link: "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2",
   },
   {
-    id: "mock-interview",
-    title: "Mock Interviews",
+    id: "microsoft-interview-question",
+    title: "Microsoft Interview Questions",
     description:
-      "Take real-time mock interviews to test your problem-solving and communication skills.",
-    icon: <Video />,
-    link: "https://www.pramp.com/",
+      "Frequently asked interview question in Microsoft from Indeed",
+    icon: <ClipboardList />,
+    link: "https://ie.indeed.com/career-advice/interviewing/microsoft-interview-questions",
   },
   {
-    id: "one-on-one-mentorship",
-    title: "1:1 Mentorship",
+    id: "cses-problem-sheet",
+    title: "CSES Problem Sheet",
     description:
-      "Get expert guidance from experienced professionals via personalized mentorship.",
-    icon: <Users />,
-    link: "https://www.codingninjas.com/career-guidance",
+      "A collection of comprehensive high quality problem set for learning algorithmic programming.",
+    icon: <Code />,
+    link: "https://cses.fi/problemset/",
   },
+  
   {
     id: "interview-experiences",
     title: "Interview Experiences",
@@ -58,7 +59,7 @@ const resources = [
     description:
       "Get your resume reviewed by industry experts to improve your chances of getting shortlisted.",
     icon: <Briefcase />,
-    link: "https://www.resumeworded.com/",
+    link: "http://ec2-52-66-131-35.ap-south-1.compute.amazonaws.com/analyser"
   },
   {
     id: "blogs",
