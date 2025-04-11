@@ -54,7 +54,7 @@ const InterviewStats = ({ interviews }) => {
             <CardContent>
               <p className="text-sm text-gray-600">Last Interview</p>
               <p className="text-2xl font-bold text-gray-800">
-                {interviews[interviews.length - 1]?.score || "-"}
+                {interviews[interviews.length - 1]?.score*10 || "-"}
               </p>
             </CardContent>
           </Card>

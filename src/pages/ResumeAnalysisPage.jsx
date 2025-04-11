@@ -1,4 +1,3 @@
-// src/pages/ResumeAnalysisPage.jsx
 import React, { useState } from 'react';
 import UploadZone from '../components/ResumeAnalyser/UploadZone';
 import AnalysisStatus from '../components/ResumeAnalyser/AnalysisStatus';
@@ -10,11 +9,10 @@ export default function ResumeAnalysisPage() {
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
-  const [_, setIsAnalyzing] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const { updateScore } = useAuthStore();
 
-  // Mock analysis results
   const [analysisResults, setAnalysisResults] = useState({
     score: 0,
     strengths: [],
@@ -23,7 +21,6 @@ export default function ResumeAnalysisPage() {
     sections: {},
   });
 
-  // Handle drag events
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -45,7 +42,6 @@ export default function ResumeAnalysisPage() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     const files = e.dataTransfer.files;
     handleFiles(files);
   };
@@ -55,123 +51,111 @@ export default function ResumeAnalysisPage() {
     handleFiles(files);
   };
 
-  const handleFiles = (files) => {
+  const handleFiles = async (files) => {
     if (files.length > 0) {
       const selectedFile = files[0];
       if (selectedFile.type === "application/pdf") {
         setFile(selectedFile);
         setIsUploaded(true);
-        analyzeResume(selectedFile);
+        await analyzeResume(selectedFile);
       } else {
         alert("Please upload a PDF file");
       }
     }
   };
 
+  // ✅ Utility: Parse feedback text into strengths & improvements
+  const parseFeedbackSections = (text) => {
+    const strengths = [];
+    const improvements = [];
+    let currentSection = null;
+
+    const lines = text.split("\n");
+    for (let line of lines) {
+      line = line.trim();
+
+      if (/^strengths[:]?$/i.test(line)) {
+        currentSection = 'strengths';
+        continue;
+      }
+
+      if (/areas?\s+for\s+improvement[:]?$/i.test(line)) {
+        currentSection = 'improvements';
+        continue;
+      }
+
+      const match = line.match(/^\d+[\.\)]\s+(.*)/);
+      if (match && currentSection) {
+        const item = match[1].trim();
+        if (currentSection === 'strengths') strengths.push(item);
+        if (currentSection === 'improvements') improvements.push(item);
+      }
+    }
+
+    return { strengths, improvements };
+  };
+
   const analyzeResume = async (file) => {
     setIsAnalyzing(true);
+    setAnalysisComplete(false);
+
     const token = localStorage.getItem("token");
 
     try {
       const formData = new FormData();
       formData.append('resume', file);
-  
-      // 1. Upload Resume
+
+      // Upload resume
       const uploadRes = await axiosInstance.put('/resume/upload-resume', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const resumeUrl = uploadRes.data.resumeUrl;
-  
-      // 2. Get ATS Score
-      const atsRes = await axiosInstance.post(
-        '/resume/ats-score',
-        { resumeUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+
+      // Parallel analysis requests
+      const [atsRes, feedbackRes, tipsRes] = await Promise.all([
+        axiosInstance.post('/resume/ats-score', { resumeUrl }, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axiosInstance.post('/resume/resume-feedback', { resumeUrl }, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axiosInstance.post('/resume/resume-improvement-tips', { resumeUrl }, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      // Score
       const score = parseInt(atsRes.data.atsScore, 10);
       updateScore({ atsScore: score });
-  
-      // 3. Get Feedback
-      const feedbackRes = await axiosInstance.post(
-        '/resume/resume-feedback',
-        { resumeUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      const feedbackText = feedbackRes.data.feedback;
-      const strengths = [];
-      const improvements = [];
-      const lines = feedbackText.split('\n');
-      let currentSection = '';
-  
-      for (let line of lines) {
-        line = line.trim();
-        if (line.toLowerCase().startsWith('strength')) {
-          currentSection = 'strengths';
-          continue;
-        } else if (line.toLowerCase().startsWith("improvement")) {
-          currentSection = "improvements";
-          continue;
-        }
-  
-        const match = line.match(/^\d+[\.\)]\s+(.*)/);
-        if (match) {
-          const item = match[1].trim();
-          if (currentSection === "strengths") strengths.push(item);
-          if (currentSection === "improvements") improvements.push(item);
-        }
-      }
-  
-      // 4. Get Improvement Tips
-      const tipsRes = await axiosInstance.post(
-        '/resume/resume-improvement-tips',
-        { resumeUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
+
+      // Feedback sections
+      const { strengths, improvements } = parseFeedbackSections(feedbackRes.data.feedback);
+
+      // Improvement tips → Keywords
       const keywords = [];
-      const tipsLines = tipsRes.data.improvementTips.split('\n');
-      for (let line of tipsLines) {
+      tipsRes.data.improvementTips.split('\n').forEach((line) => {
         const match = line.trim().match(/^\d+[\.\)]\s+(.*)/);
-        if (match) {
-          keywords.push(match[1].trim());
-        }
-      }
-  
-      // 5. Update UI
-      setAnalysisResults((prev) => ({
-        ...prev,
+        if (match) keywords.push(match[1].trim());
+      });
+
+      // Final state update
+      setAnalysisResults({
         score,
         strengths,
         improvements,
         keywords,
-      }));
+        sections: {},
+      });
+
       setAnalysisComplete(true);
     } catch (err) {
-      console.error('❌ Error:', err);
-      alert(err.response?.data?.message || 'Something went wrong. Please try again.');
+      console.error("❌ Error analyzing resume:", err);
+      alert(err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setIsAnalyzing(false);
     }
   };
-  
-  
-  
-  // Reset state for reupload
+
   const handleReupload = () => {
     setFile(null);
     setIsUploaded(false);
@@ -203,11 +187,18 @@ export default function ResumeAnalysisPage() {
         <div className="space-y-6">
           <AnalysisStatus
             file={file}
+            isAnalyzing={isAnalyzing}
             analysisComplete={analysisComplete}
             handleReupload={handleReupload}
           />
 
-          {analysisComplete && <ResultTabs analysisResults={analysisResults} />}
+          {isAnalyzing && (
+            <div className="text-center text-blue-600 font-medium">Analyzing resume...</div>
+          )}
+
+          {!isAnalyzing && analysisComplete && (
+            <ResultTabs analysisResults={analysisResults} />
+          )}
         </div>
       )}
     </div>
