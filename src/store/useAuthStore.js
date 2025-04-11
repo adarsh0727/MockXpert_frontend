@@ -7,7 +7,7 @@ const BASE_URL =
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
-  atsScore:0,
+  atsScore: 0,
   isSigningUp: false,
   isLoggingIng: false,
   isUpdatingProfile: false,
@@ -32,6 +32,7 @@ export const useAuthStore = create((set, get) => ({
       await axiosInstance.post("/user/signup", data);
       toast("Mail Successfully sent");
     } catch (error) {
+      console.log("Error in signup:", error.message);
       toast(error.response.data.message);
     } finally {
       set({ isSigningUp: false });
@@ -46,7 +47,7 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast("Logged in successfully");
     } catch (error) {
-      toast({ title: error.response.data.error, variant: "destructive" });
+      toast(error.response.data.message);
     } finally {
       set({ isLoggingIng: false });
     }
@@ -79,7 +80,7 @@ export const useAuthStore = create((set, get) => ({
 
   updateScore: async (data) => {
     try {
-      const res = await axiosInstance.put('/user/update-ats-score', data);
+      const res = await axiosInstance.put("/user/update-ats-score", data);
       set((state) => ({
         authUser: {
           ...state.authUser,
