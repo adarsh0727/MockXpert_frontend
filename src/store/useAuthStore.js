@@ -47,12 +47,7 @@ export const useAuthStore = create((set, get) => ({
       set({ authUser: res.data });
       toast("Logged in successfully");
     } catch (error) {
-<<<<<<< Updated upstream
       toast(error.response.data.message);
-=======
-      console.log(error)
-      // toast({ title: error.response.data.error, variant: "destructive" });
->>>>>>> Stashed changes
     } finally {
       set({ isLoggingIng: false });
     }
