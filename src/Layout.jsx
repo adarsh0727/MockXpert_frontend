@@ -2,9 +2,16 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
+import Loader from "./components/Loader";
 
 function Layout() {
   const [open, setOpen] = useState(true);
+  const { isLoggingIn } = useAuthStore();
+
+  if (isLoggingIn) {
+    return <Loader />;
+  }
 
   return (
     <SidebarProvider
