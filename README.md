@@ -132,12 +132,5 @@ npm install -g vite
 npm run dev
 ```
 
-## Contributors
-
-### Team HackOps
-- *Utsav Gondaliya*
-- *Ojaswa Varshney*
-- *Adarsh Singh*
-
 ## Event
 This project was developed for Dev Heat.
